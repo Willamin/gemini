@@ -19,6 +19,10 @@ $ shards build --release
 $ crem repl        # begin a REPL-style barebones Gemini client
 ```
 
+## Screenshot
+
+![screenshot of REPL-style barebones Gemini client](crem-poc-screenshot.png)
+
 ## Contributing
 
 1. Fork it (<https://github.com/Willamin/capsule/fork>)
