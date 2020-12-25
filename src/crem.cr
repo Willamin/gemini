@@ -12,7 +12,7 @@ class Object
   def pipe(); yield self; end
 end
 
-module Capsule
+module Crem
   VERSION = "0.1.0"
 
   module Gemini
@@ -21,7 +21,7 @@ module Capsule
   end
 end
 
-class Capsule::REPL
+class Crem::REPL
   @verbose = false
 
   def verbose_puts(value)
@@ -32,10 +32,13 @@ class Capsule::REPL
 
   def start
     loop do
+      print("uri to fetch: ")
       STDIN.gets
+        .try(&.strip)
         .try { |i| eval(i) }
         .pipe { |x| x || "<no response>" }
         .puts
+      puts("\n-------\n")
     end
   end
 
@@ -54,5 +57,7 @@ class Capsule::REPL
   end
 end
 
-
-Capsule::REPL.new.start
+case ARGV[0]?
+when "repl" then Crem::REPL.new.start
+else STDERR.puts("usage: #{PROGRAM_NAME} repl"); exit(1)
+end

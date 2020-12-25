@@ -1,7 +1,6 @@
-class Capsule::Gemini::InvalidStatusCode < Exception
-  end
+class Crem::Gemini::InvalidStatusCode < Exception; end
 
-enum Capsule::Gemini::Status
+enum Crem::Gemini::Status
   Input
   SensitiveInput
   Success
