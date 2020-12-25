@@ -1,6 +1,8 @@
 # capsule
 
-TODO: Write a description here
+First, a PoC gemini client.
+
+Secondly, a PoC gemini server.
 
 ## Installation
 
