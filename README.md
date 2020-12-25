@@ -1,20 +1,23 @@
 # capsule
 
-First, a PoC gemini client.
-
-Secondly, a PoC gemini server.
+[x] First, a PoC gemini client.
+[ ] Secondly, a PoC gemini server.
 
 ## Installation
 
-TODO: Write installation instructions here
+```
+$ git clone https://github.com/Willamin/crem.git
+$ cd crem
+$ shards build --release
+
+# add bin/crem to your PATH somehow
+```
 
 ## Usage
 
-TODO: Write usage instructions here
-
-## Development
-
-TODO: Write development instructions here
+```
+$ crem repl        # begin a REPL-style barebones Gemini client
+```
 
 ## Contributing
 
