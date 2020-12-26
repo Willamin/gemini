@@ -1,7 +1,7 @@
 # crem
 
-[x] First, a PoC gemini client.
-[ ] Secondly, a PoC gemini server.
+- [x] First, a PoC gemini client.
+- [ ] Secondly, a PoC gemini server.
 
 ## Installation
 
