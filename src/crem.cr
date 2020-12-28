@@ -2,6 +2,7 @@ require "socket"
 require "openssl"
 
 require "./gemini/*"
+require "./crem/*"
 
 class String
   def puts(io : IO = STDOUT)
@@ -28,32 +29,17 @@ module Crem
   end
 end
 
-class Crem::REPL
-  @history = [] of String
-
-  def start
-    Signal::INT.trap do
-      puts("~~ see you! ~~")
-      exit(0)
-    end
-
-    Crem::Gemini::Client.open do |client|
-      loop do
-        print("uri to fetch: ")
-        if line = STDIN.gets
-          @history << line
-          response = client.fetch(line.strip)
-          case response
-          when Gemini::Response::Success then puts("success")
-          end
-          puts("\n-------\n")
-        end
-      end
-    end
-  end
-end
-
 case ARGV[0]?
-when "repl" then Crem::REPL.new.start
-else             STDERR.puts("usage: #{PROGRAM_NAME} repl"); exit(1)
+when "repl"   then Crem::REPL.new.start
+when "server" then Crem::Server.new.start
+else
+  STDERR.puts(<<-USAGE
+  usage: #{PROGRAM_NAME} CMD
+
+  commands:
+    repl                  start a simple client repl
+    server                start a simple gemini server
+  USAGE
+  )
+  exit(1)
 end
