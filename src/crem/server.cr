@@ -22,12 +22,14 @@ class Crem::Server
   def initialize(@config : Config); end
 
   def start
-    puts("listening on gemini://0.0.0.0:1965")
+    puts("listening on gemini://#{@config.bind_address}:#{@config.bind_port}")
+    puts("with cert chain: #{@config.cert_chain}")
+    puts("and private key: #{@config.private_key}")
 
-    tcp_server = TCPServer.new("0.0.0.0", 1965)
+    tcp_server = TCPServer.new(@config.bind_address, @config.bind_port)
     ssl_context = OpenSSL::SSL::Context::Server.new
-    ssl_context.certificate_chain = "cert.pem"
-    ssl_context.private_key = "key.pem"
+    ssl_context.certificate_chain = @config.cert_chain
+    ssl_context.private_key = @config.private_key
     ssl_server = OpenSSL::SSL::Server.new(tcp_server, ssl_context)
 
     while client = ssl_server.accept?
