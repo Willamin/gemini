@@ -4,21 +4,36 @@ require "uri"
 
 class Crem::Server
   class Config
-    property bind_address : String = "0.0.0.0"
-    property bind_port : Int32 = 1965
-    property cert_chain : String = "cert.pem"
-    property private_key : String = "key.pem"
+    property bind_address : String
+    property bind_port : Int32
+    property cert_chain : String
+    property private_key : String
 
-    def self.from_env
-      c = Config.new
-      c.bind_address = ENV["CREM_ADDRESS"]? || c.bind_address
-      c.bind_port = ENV["CREM_PORT"]?.try(&.to_i32) || c.bind_port
-      c.cert_chain = ENV["CREM_CERT"]? || raise "must provide a CREM_CERT env"
-      c.private_key = ENV["CREM_KEY"]? || raise "must provide a CREM_KEY env"
-      c
-    rescue e
-      STDERR.puts(e.message)
-      exit(1)
+    def initialize(
+      @bind_address,
+      @bind_port,
+      @cert_chain,
+      @private_key
+    ); end
+
+    class Builder
+      property bind_address : String?
+      property bind_port : Int32?
+      property cert_chain : String?
+      property private_key : String?
+
+      def finish!
+        raise "bind_address required when finishing Crem::Server::Config::Builder" unless the_bind_address = @bind_address
+        raise "bind_port required when finishing Crem::Server::Config::Builder" unless the_bind_port = @bind_port
+        raise "cert_chain required when finishing Crem::Server::Config::Builder" unless the_cert_chain = @cert_chain
+        raise "private_key required when finishing Crem::Server::Config::Builder" unless the_private_key = @private_key
+        Config.new(
+          the_bind_address,
+          the_bind_port,
+          the_cert_chain,
+          the_private_key,
+        )
+      end
     end
   end
 

@@ -1,5 +1,6 @@
 require "socket"
 require "openssl"
+require "option_parser"
 
 require "./gemini/*"
 require "./crem/*"
@@ -29,19 +30,48 @@ module Crem
   end
 end
 
-case ARGV[0]?
-when "repl" then Crem::REPL.new.start
-when "server"
-  config = Crem::Server::Config.from_env
-  Crem::Server.new(config).start
-else
-  STDERR.puts(<<-USAGE
-  usage: #{PROGRAM_NAME} CMD
+command = :none
 
-  commands:
-    repl                  start a simple client repl
-    server                start a simple gemini server
-  USAGE
-  )
-  exit(1)
+server_config = Crem::Server::Config::Builder.new.tap do |config|
+  # set defaults
+  config.bind_address = "0.0.0.0"
+  config.bind_port = 1965
+
+  # override with ENV
+  if env_value = ENV["CREM_ADDRESS"]?
+    config.bind_address = env_value
+  end
+  if env_value = ENV["CREM_PORT"]?.try(&.to_i32)
+    config.bind_port = env_value
+  end
+  if env_value = ENV["CREM_CERT"]?
+    config.cert_chain = env_value
+  end
+  if env_value = ENV["CREM_KEY"]?
+    config.private_key = env_value
+  end
+end
+
+parser = OptionParser.new do |parser|
+  parser.banner = "Usage: crem COMMAND [options]"
+  parser.on("repl", "start a simple client repl") do
+    command = :repl
+    parser.banner = "Usage: crem repl"
+  end
+  parser.on("server", "start a simple gemini server") do
+    command = :server
+    parser.banner = "Usage: example server [options]"
+    parser.on("--cert=FILE", "Specify the certificate chain file") { |file| server_config.cert_chain = file }
+    parser.on("--key=FILE", "Specify the private key file") { |file| server_config.cert_chain = file }
+  end
+  parser.on("help", "show this help") do
+    command = :help
+  end
+end
+
+case command
+when :repl   then Crem::REPL.new.start
+when :help   then puts(parser); exit(0)
+when :none   then puts(parser); exit(1)
+when :server then Crem::Server.new(server_config.finish!).start
 end
