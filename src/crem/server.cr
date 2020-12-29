@@ -57,8 +57,29 @@ class Crem::Server
 
   def handle_client(client : OpenSSL::SSL::Socket::Server)
     request = client.gets
-    puts("requested #{request}")
-    client.puts("20 text/gemini\r\nhello world\nyou requested:\n```\n#{request}\n```")
+    puts("#{Time.utc} #{request}")
+    client.puts(<<-GEM
+      20 text/gemini
+      # Welcome
+
+      Hi, I'm Will.
+
+      I'm writing a Gemini server in Crystal-lang and I'm hosting what I have in-progress here.
+
+      Currently I've implemented:
+      * TLS connection
+      * TCP server
+      * recognizing the requested url (see below)
+      * logging datetime + requested url
+
+      you requested:
+      ```
+      #{request}
+      ```
+
+      Thanks for stopping by! I'll be adding further support for the Gemini protocol over the next few days, hopefully.
+      GEM
+    )
     client.flush
     client.close
   end
