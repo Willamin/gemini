@@ -60,7 +60,7 @@ parser = OptionParser.new do |parser|
   end
   parser.on("server", "start a simple gemini server") do
     command = :server
-    parser.banner = "Usage: example server [options]"
+    parser.banner = "Usage: crem server [options]"
     parser.on("--cert=FILE", "Specify the certificate chain file") { |file| server_config.cert_chain = file }
     parser.on("--key=FILE", "Specify the private key file") { |file| server_config.cert_chain = file }
   end
@@ -68,10 +68,17 @@ parser = OptionParser.new do |parser|
     command = :help
   end
 end
+parser.parse
 
 case command
-when :repl   then Crem::REPL.new.start
-when :help   then puts(parser); exit(0)
-when :none   then puts(parser); exit(1)
-when :server then Crem::Server.new(server_config.finish!).start
+when :repl then Crem::REPL.new.start
+when :help then puts(parser); exit(0)
+when :server
+  begin
+    Crem::Server.new(server_config.finish!).start
+  rescue e
+    puts(e.message)
+    exit(1)
+  end
+else puts(parser); exit(1)
 end
