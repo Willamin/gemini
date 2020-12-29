@@ -62,7 +62,7 @@ parser = OptionParser.new do |parser|
     command = :server
     parser.banner = "Usage: crem server [options]"
     parser.on("--cert=FILE", "Specify the certificate chain file") { |file| server_config.cert_chain = file }
-    parser.on("--key=FILE", "Specify the private key file") { |file| server_config.cert_chain = file }
+    parser.on("--key=FILE", "Specify the private key file") { |file| server_config.private_key = file }
   end
   parser.on("help", "show this help") do
     command = :help

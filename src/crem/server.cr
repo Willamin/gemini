@@ -55,9 +55,11 @@ class Crem::Server
     end
   end
 
-  def handle_client(client)
-    puts("connected to client")
-    client << "20 text/gemini; charset=utf-8\r\nhello world\njust a quick, hard-coded gemini response; more to come"
+  def handle_client(client : OpenSSL::SSL::Socket::Server)
+    request = client.gets
+    puts("requested #{request}")
+    client.puts("20 text/gemini\r\nhello world\nyou requested:\n```\n#{request}\n```")
+    client.flush
     client.close
   end
 end
