@@ -13,9 +13,12 @@ class Crem::Server
       c = Config.new
       c.bind_address = ENV["CREM_ADDRESS"]? || c.bind_address
       c.bind_port = ENV["CREM_PORT"]?.try(&.to_i32) || c.bind_port
-      c.cert_chain = ENV["CREM_CERT"]? || c.cert_chain
-      c.private_key = ENV["CREM_KEY"]? || c.private_key
+      c.cert_chain = ENV["CREM_CERT"]? || raise "must provide a CREM_CERT env"
+      c.private_key = ENV["CREM_KEY"]? || raise "must provide a CREM_KEY env"
       c
+    rescue e
+      STDERR.puts(e.message)
+      exit(1)
     end
   end
 
@@ -38,6 +41,7 @@ class Crem::Server
   end
 
   def handle_client(client)
+    puts("connected to client")
     client << "20 text/gemini; charset=utf-8\r\nhello world\njust a quick, hard-coded gemini response; more to come"
     client.close
   end
