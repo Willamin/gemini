@@ -30,8 +30,10 @@ module Crem
 end
 
 case ARGV[0]?
-when "repl"   then Crem::REPL.new.start
-when "server" then Crem::Server.new.start
+when "repl" then Crem::REPL.new.start
+when "server"
+  config = Crem::Server::Config.from_env
+  Crem::Server.new(config).start
 else
   STDERR.puts(<<-USAGE
   usage: #{PROGRAM_NAME} CMD

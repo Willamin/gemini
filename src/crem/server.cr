@@ -3,6 +3,24 @@ require "socket"
 require "uri"
 
 class Crem::Server
+  class Config
+    property bind_address : String = "0.0.0.0"
+    property bind_port : Int32 = 1965
+    property cert_chain : String = "cert.pem"
+    property private_key : String = "key.pem"
+
+    def self.from_env
+      c = Config.new
+      c.bind_address = ENV["CREM_ADDRESS"]? || c.bind_address
+      c.bind_port = ENV["CREM_PORT"]?.try(&.to_i32) || c.bind_port
+      c.cert_chain = ENV["CREM_CERT"]? || c.cert_chain
+      c.private_key = ENV["CREM_KEY"]? || c.private_key
+      c
+    end
+  end
+
+  def initialize(@config : Config); end
+
   def start
     puts("listening on gemini://0.0.0.0:1965")
 
