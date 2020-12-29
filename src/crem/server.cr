@@ -79,6 +79,8 @@ class Crem::Server
 
       Thanks for stopping by! I'll be adding further support for the Gemini protocol over the next few days, hopefully.
       GEM
+      .gsub("\n", "\r\n")
+      .squeeze("\r")
     )
     client.flush
     client.close
