@@ -34,4 +34,3 @@ class Gemini::Server::Context::Response
     end
   end
 end
-

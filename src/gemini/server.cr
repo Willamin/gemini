@@ -4,6 +4,10 @@ class Gemini::Server
   property certificate_chain : String?
   property private_key : String?
 
+  class MissingCertificateChain < Exception; end
+
+  class MissingPrivateKey < Exception; end
+
   def self.new(&handler : Gemini::Server::Handler::HandlerProc) : self
     new(handler)
   end
@@ -21,10 +25,19 @@ class Gemini::Server
   end
 
   def start_underlying_servers
-    tcp_server = TCPServer.new(@address, @port)
     ssl_context = OpenSSL::SSL::Context::Server.new
-    ssl_context.certificate_chain = @certificate_chain.not_nil!
-    ssl_context.private_key = @private_key.not_nil!
+
+    unless cert_chain = @certificate_chain
+      raise MissingCertificateChain.new
+    end
+    unless priv_key = @private_key
+      raise MissingPrivateKey.new
+    end
+
+    ssl_context.certificate_chain = cert_chain
+    ssl_context.private_key = priv_key
+
+    tcp_server = TCPServer.new(@address, @port)
     ssl_server = OpenSSL::SSL::Server.new(tcp_server, ssl_context)
   end
 
