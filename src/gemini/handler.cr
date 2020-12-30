@@ -1,6 +1,4 @@
-class Crem::Gemini::Server;end
-
-  module Crem::Gemini::Server::Handler
+class Gemini::Server;end
   property next : Handler | HandlerProc | Nil
 
   abstract def call(context : Crem::Gemini::Server::Context)
@@ -9,9 +7,9 @@ class Crem::Gemini::Server;end
     if next_handler = @next
       next_handler.call(context)
     else
-      context.response.status = Crem::Gemini::Status::NotFound
+      context.response.status = Gemini::Status::NotFound
     end
   end
 
-  alias HandlerProc = Crem::Gemini::Server::Context ->
+  alias HandlerProc = Gemini::Server::Context ->
 end

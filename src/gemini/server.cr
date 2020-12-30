@@ -1,24 +1,24 @@
 require "./handlers/*"
 
-class Crem::Gemini::Server
+class Gemini::Server
   property address = "0.0.0.0"
   property port = 1965
   property certificate_chain : String?
   property private_key : String?
 
-  def self.new(&handler : Crem::Gemini::Server::Handler::HandlerProc) : self
+  def self.new(&handler : Gemini::Server::Handler::HandlerProc) : self
     new(handler)
   end
 
-  def self.new(handlers : Array(Crem::Gemini::Server::Handler), &handler : Crem::Gemini::Server::Handler::HandlerProc) : self
+  def self.new(handlers : Array(Gemini::Server::Handler), &handler : Gemini::Server::Handler::HandlerProc) : self
     new(self.build_middleware(handlers, handler))
   end
 
-  def self.new(handlers : Array(Crem::Gemini::Server::Handler)) : self
+  def self.new(handlers : Array(Gemini::Server::Handler)) : self
     new(self.build_middleware(handlers))
   end
 
-  def initialize(handler : Crem::Gemini::Server::Handler | Crem::Gemini::Server::Handler::HandlerProc)
+  def initialize(handler : Gemini::Server::Handler | Gemini::Server::Handler::HandlerProc)
     @handler = handler
   end
 
@@ -52,41 +52,3 @@ class Crem::Gemini::Server
     handlers.first
   end
 end
-
-class Crem::Gemini::Server::Context
-  getter request : Request
-  getter response : Response = Response.new
-
-  def initialize(@request); end
-end
-
-class Crem::Gemini::Server::Context::Request
-  property uri
-
-  def initialize(raw : String)
-    @uri = URI.parse(raw)
-  end
-end
-
-class Crem::Gemini::Server::Context::Response
-  property status : Crem::Gemini::Status = Crem::Gemini::Status::TemporaryFailure
-  property content_type : String?
-  getter body : String = ""
-
-  def print(printable_thing)
-    @body += printable_thing
-  end
-
-  def full
-    String.build do |s|
-      s << status.to_i32.to_s
-      if ct = content_type
-        s << " "
-        s << ct
-      end
-      s << "\r\n"
-      s << @body
-    end
-  end
-end
-

@@ -1,11 +1,10 @@
-class Crem::Gemini::Server::InternalRedirectHandler
-  include Crem::Gemini::Server::Handler
+class Gemini::Server::InternalRedirectHandler
+  include Gemini::Server::Handler
 
   def initialize(@redirects : Hash(String, String)); end
 
   def call(context)
     if new_path = @redirects[context.request.uri.path]?
-      puts("#{context.request.uri.path}->#{new_path}")
       context.request.uri.path = new_path
     end
 

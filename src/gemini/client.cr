@@ -1,9 +1,9 @@
-class Crem::Gemini::Client
+class Gemini::Client
   def self.open
     yield self.new
   end
 
-  def fetch(uri) : Crem::Gemini::Response
+  def fetch(uri) : Gemini::Response
     host = URI.parse(uri).hostname.not_nil!
     socket = TCPSocket.new(host, 1965)
     context = OpenSSL::SSL::Context::Client.new
@@ -12,11 +12,11 @@ class Crem::Gemini::Client
 
     ssl_socket << "#{uri}\r\n"
     ssl_socket.flush
-    Crem::Gemini::Response.parse(ssl_socket)
+    Gemini::Response.parse(ssl_socket)
   end
 end
 
-module Crem::Gemini
+module Gemini
   abstract class Response
     def self.parse(io : IO) : Response
       case io.gets(2).try &.to_i32
