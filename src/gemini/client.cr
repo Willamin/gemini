@@ -26,7 +26,9 @@ module Crem::Gemini
     end
 
     class Success < Response
-      def initialize(io); end
+      getter io : IO
+
+      def initialize(@io); end
     end
   end
 end

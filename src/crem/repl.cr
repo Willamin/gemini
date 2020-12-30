@@ -14,7 +14,7 @@ class Crem::REPL
           @history << line
           response = client.fetch(line.strip)
           case response
-          when Gemini::Response::Success then puts("success")
+          when Gemini::Response::Success then puts(response.io.gets_to_end)
           end
           puts("\n-------\n")
         end
