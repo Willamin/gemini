@@ -1,6 +1,4 @@
 class Gemini::Server
-  property address = "0.0.0.0"
-  property port = 1965
   property certificate_chain : String?
   property private_key : String?
 
@@ -24,7 +22,7 @@ class Gemini::Server
     @handler = handler
   end
 
-  def start_underlying_servers
+  def start_underlying_servers(addr, port)
     ssl_context = OpenSSL::SSL::Context::Server.new
 
     unless cert_chain = @certificate_chain
@@ -37,12 +35,12 @@ class Gemini::Server
     ssl_context.certificate_chain = cert_chain
     ssl_context.private_key = priv_key
 
-    tcp_server = TCPServer.new(@address, @port)
+    tcp_server = TCPServer.new(addr, port)
     ssl_server = OpenSSL::SSL::Server.new(tcp_server, ssl_context)
   end
 
-  def listen
-    ssl_server = start_underlying_servers
+  def listen(addr, port)
+    ssl_server = start_underlying_servers(addr, port)
     while conn = ssl_server.accept?
       spawn handle_connection(conn)
     end
