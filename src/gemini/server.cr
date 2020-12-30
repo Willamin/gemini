@@ -1,3 +1,5 @@
+require "./handlers/*"
+
 class Crem::Gemini::Server
   property address = "0.0.0.0"
   property port = 1965
@@ -43,7 +45,7 @@ class Crem::Gemini::Server
     conn.close
   end
 
-  def build_middleware(handlers, last_handler : (Context ->)? = nil)
+  def self.build_middleware(handlers, last_handler : (Context ->)? = nil)
     raise ArgumentError.new "You must specify at least one Gemini Handler." if handlers.empty?
     0.upto(handlers.size - 2) { |i| handlers[i].next = handlers[i + 1] }
     handlers.last.next = last_handler if last_handler
@@ -88,28 +90,3 @@ class Crem::Gemini::Server::Context::Response
   end
 end
 
-module Crem::Gemini::Server::Handler
-  property next : Handler | HandlerProc | Nil
-
-  abstract def call(context : Crem::Gemini::Server::Context)
-
-  def call_next(context : Crem::Gemini::Server::Context)
-    if next_handler = @next
-      next_handler.call(context)
-    else
-      raise
-      # context.response.respond_with_status(:not_found)
-    end
-  end
-
-  alias HandlerProc = Crem::Gemini::Server::Context ->
-end
-
-class CustomHandler
-  include Crem::Gemini::Server::Handler
-
-  def call(context)
-    puts "Doing some stuff"
-    # call_next(context)
-  end
-end

@@ -1,34 +1,10 @@
+require "mime"
 require "socket"
 require "openssl"
 require "option_parser"
 
 require "./gemini/*"
 require "./crem/*"
-
-module WFL
-  def self.home(request)
-    <<-HOME
-    # Welcome
-
-    Hi, I'm Will.
-
-    I'm writing a Gemini server in Crystal-lang and I'm hosting what I have in-progress here.
-
-    Currently I've implemented:
-    * TLS connection
-    * TCP server
-    * recognizing the requested url (see below)
-    * logging datetime + requested url
-
-    you requested:
-    ```
-    #{request.uri}
-    ```
-
-    Thanks for stopping by! I'll be adding further support for the Gemini protocol over the next few days, hopefully.
-    HOME
-  end
-end
 
 class String
   def puts(io : IO = STDOUT)
@@ -100,11 +76,12 @@ when :repl then Crem::REPL.new.start
 when :help then puts(parser); exit(0)
 when :server
   begin
-    server = Crem::Gemini::Server.new do |context|
-      context.response.status = Crem::Gemini::Status::Success
-      context.response.content_type = "text/gemini"
-      context.response.print WFL.home(context.request)
-    end
+    MIME.register(".gmi", "text/gemini")
+
+    server = Crem::Gemini::Server.new([
+      Crem::Gemini::Server::InternalRedirectHandler.new({"/" => "gemini.gmi"}),
+      Crem::Gemini::Server::StaticHandler.new("."),
+    ])
 
     server.certificate_chain = server_config.cert_chain
     server.private_key = server_config.private_key
