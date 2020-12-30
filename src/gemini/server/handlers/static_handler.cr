@@ -8,7 +8,7 @@ class Gemini::Server::StaticHandler
 
     context.response.content_type = MIME.from_extension?(path.extension)
 
-    if File.exists?(path)
+    if File.exists?(path) && File.file?(path)
       context.response.status = Gemini::Status::Success
       context.response.print File.read(path)
     else

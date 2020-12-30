@@ -1,5 +1,3 @@
-require "./handlers/*"
-
 class Gemini::Server
   property address = "0.0.0.0"
   property port = 1965
@@ -52,3 +50,5 @@ class Gemini::Server
     handlers.first
   end
 end
+
+require "./server/*"

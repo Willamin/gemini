@@ -1,9 +1,9 @@
-class Gemini::Server;end
+module Gemini::Server::Handler
   property next : Handler | HandlerProc | Nil
 
-  abstract def call(context : Crem::Gemini::Server::Context)
+  abstract def call(context : Gemini::Server::Context)
 
-  def call_next(context : Crem::Gemini::Server::Context)
+  def call_next(context : Gemini::Server::Context)
     if next_handler = @next
       next_handler.call(context)
     else
@@ -13,3 +13,5 @@ class Gemini::Server;end
 
   alias HandlerProc = Gemini::Server::Context ->
 end
+
+require "./handlers/*"
